@@ -3,17 +3,17 @@ package Interfaz;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-
+import javax.swing.JTextField;
 
 public class View extends javax.swing.JFrame{
-    
+    //private final DialogPanel dialogPanel = new DialogPanel();
+    //private final DisplayPanel displayPanel = new DisplayPanel();
     private JTextField txtAmount;
-    private JTextField txtExchange;
     private JComboBox comboFrom;
     private JComboBox comboTo;
+    private JTextField txtExchange;
     
     public View(){
         initComponents();
@@ -22,19 +22,31 @@ public class View extends javax.swing.JFrame{
     
     private void initComponents(){
         txtAmount = new JTextField(10);
-        txtExchange = new JTextField(15);
+        txtAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                update(evt);
+            }
+        });
         comboFrom = new JComboBox<>();
         comboTo = new JComboBox<>();
+        
+        txtAmount.setText("0");
+        
+        txtExchange = new JTextField(15);
+        txtExchange.setText("0");
+        txtExchange.setEditable(false);
         
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Money_Calculator");
         
-        JPanel dialogPanel = new JPanel();
-        JPanel displayPanel = new JPanel();
+        setLayout(new BorderLayout());
         
+        JPanel dialogPanel = new JPanel();
         dialogPanel.add(txtAmount);
         dialogPanel.add(comboFrom);
         dialogPanel.add(comboTo);
+        
+        JPanel displayPanel = new JPanel();
         displayPanel.add(txtExchange);
         
         fillComboBoxes(); 
@@ -45,11 +57,18 @@ public class View extends javax.swing.JFrame{
             }
         });
         
-        setLayout(new BorderLayout());
-        this.add(dialogPanel, BorderLayout.NORTH);
-        this.add(displayPanel, BorderLayout.SOUTH);
         
+        add(dialogPanel, BorderLayout.NORTH);
+        add(displayPanel, BorderLayout.SOUTH);
         pack();
+    }
+    
+    private void update(java.awt.event.KeyEvent evt) {
+        String s = getAmount() + "";
+        if(!s.equals("") && s.matches("[0-9]+\\.[0-9]*")){
+            double n = Controlador.Controller.update(getAmount(), getFrom(), getTo());
+            setExchange(n);
+        }
     }
     
     public double getAmount() {
@@ -62,10 +81,6 @@ public class View extends javax.swing.JFrame{
     
     public String getTo() {
         return comboTo.getSelectedItem().toString();
-    }
-    
-    public void setExchange(double r) {
-        txtExchange.setText(Double.toString(r));
     }
     
     private void fillComboBoxes(){
@@ -94,5 +109,9 @@ public class View extends javax.swing.JFrame{
         for (String divisa : divisas) {
             comboTo.addItem(divisa);
         }
-    } 
+    }
+    
+    public void setExchange(double r) {
+        txtExchange.setText(r + "");
+    }
 }

@@ -12,13 +12,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
-public class Modelo {
+public class Model {
     private final double amount;
     private double exchange;
     private final String from;
     private final String to;
     
-    public Modelo(double amount, String from, String to){
+    public Model(double amount, String from, String to){
         this.amount = amount;
         this.from = from;
         this.to = to;
