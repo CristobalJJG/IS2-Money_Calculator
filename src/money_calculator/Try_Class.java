@@ -2,13 +2,15 @@ package money_calculator;
 
 import Controlador.Controller;
 import Interfaz.View;
+import Modelo.Currencies;
 import Modelo.Model;
 
 public class Try_Class {
     public static void main(String[] args){
         //try_modelo();
         //try_view();
-        try_all();
+        //try_all();
+        new Currencies();
     }
     
     private static void try_all(){

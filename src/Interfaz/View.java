@@ -1,74 +1,112 @@
 package Interfaz;
 
+import Modelo.Currencies;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+  import javax.swing.JLabel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class View extends javax.swing.JFrame{
-    //private final DialogPanel dialogPanel = new DialogPanel();
-    //private final DisplayPanel displayPanel = new DisplayPanel();
     private JTextField txtAmount;
     private JComboBox comboFrom;
     private JComboBox comboTo;
+    
     private JTextField txtExchange;
+    private JLabel lblSimbolo;
     
     public View(){
         initComponents();
+        addListeners();
+        editComponents();
         setVisible(true);
     }
     
     private void initComponents(){
-        txtAmount = new JTextField(10);
-        txtAmount.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                update(evt);
-            }
-        });
-        comboFrom = new JComboBox<>();
-        comboTo = new JComboBox<>();
-        
-        txtAmount.setText("0");
-        
-        txtExchange = new JTextField(15);
-        txtExchange.setText("0");
-        txtExchange.setEditable(false);
-        
+        //https://github.com/JFormDesigner/FlatLaf/tree/main/flatlaf-intellij-themes
+        try{
+            javax.swing.UIManager.setLookAndFeel(com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatAtomOneDarkIJTheme.class.getName());
+        }catch(ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException e){
+            e.getMessage();
+        }
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Money_Calculator");
         
         setLayout(new BorderLayout());
+        
+        txtAmount = new JTextField(10);
+        comboFrom = new JComboBox<>();
+        comboTo = new JComboBox<>();
         
         JPanel dialogPanel = new JPanel();
         dialogPanel.add(txtAmount);
         dialogPanel.add(comboFrom);
         dialogPanel.add(comboTo);
         
+        txtExchange = new JTextField(15);
+        txtExchange.setText("0");
+        txtExchange.setEditable(false);
+        lblSimbolo = new JLabel();
+        
         JPanel displayPanel = new JPanel();
         displayPanel.add(txtExchange);
+        displayPanel.add(lblSimbolo);
         
         fillComboBoxes(); 
-        comboFrom.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                fillComboTo((String) getFrom());
-            }
-        });
-        
         
         add(dialogPanel, BorderLayout.NORTH);
         add(displayPanel, BorderLayout.SOUTH);
         pack();
     }
     
-    private void update(java.awt.event.KeyEvent evt) {
-        String s = getAmount() + "";
-        if(!s.equals("") && s.matches("[0-9]+\\.[0-9]*")){
+    private void addListeners(){
+        txtAmount.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent evt) {
+                updateNumber(evt);
+            }
+        });
+        
+        comboFrom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                updateFromTo(ae);
+            }
+        });
+        
+        comboTo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                updateFromTo(ae);
+            }
+        });
+    }
+    
+    private void editComponents() {
+        try{
+            UIManager.setLookAndFeel("windows");
+        } catch(ClassNotFoundException | IllegalAccessException |
+                InstantiationException | UnsupportedLookAndFeelException e) {
+            System.out.println(e);
+        }
+    }
+    
+    private void updateNumber(KeyEvent evt) {
+        if((getAmount() + "").matches("[0-9]+\\.[0-9]*")){
             double n = Controlador.Controller.update(getAmount(), getFrom(), getTo());
             setExchange(n);
         }
+    }
+    
+    private void updateFromTo(ActionEvent ae) {
+        double n = Controlador.Controller.update(getAmount(), getFrom(), getTo());
+        setExchange(n);
     }
     
     public double getAmount() {
@@ -83,31 +121,12 @@ public class View extends javax.swing.JFrame{
         return comboTo.getSelectedItem().toString();
     }
     
-    private void fillComboBoxes(){
-        fillComboFrom();
-        fillComboTo((String) getFrom());
-    }
-    
-    private void fillComboFrom() {
-        String[] divisas = new String[]{"EUR", "USD", "GBP", "BTC", "ETH"};
-        for (String divisa : divisas) {
-            comboFrom.addItem(divisa);
-        }
-    }
-    
-    private void fillComboTo(String selectedItem) {
-        String[] divisas = new String[]{};
-        comboTo.removeAllItems();
-        switch(selectedItem){
-            case "USD": divisas = new String[]{"EUR", "GBP", "BTC", "ETH"}; break;
-            case "EUR": divisas = new String[]{"USD", "GBP", "BTC", "ETH"}; break;
-            case "GBP": divisas = new String[]{"EUR", "USD", "BTC", "ETH"}; break;
-            case "BTC": divisas = new String[]{"EUR", "GBP", "USD", "ETH"}; break;
-            case "ETH": divisas = new String[]{"EUR", "GBP", "BTC", "USD"}; break;
-        }
-
+    private void fillComboBoxes() {
+        Currencies c = new Currencies();
+        String[] divisas = (String[])c.getCurrencies();
         for (String divisa : divisas) {
             comboTo.addItem(divisa);
+            comboFrom.addItem(divisa);
         }
     }
     

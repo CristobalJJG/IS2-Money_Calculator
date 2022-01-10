@@ -35,8 +35,8 @@ public class Model {
     }
     
     private double getExchangeRate(){
-        String url_str = "https://api.exchangerate.host/convert?"
-                + "from=" + from + "&to=" + to;
+        String url_str = "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies"
+                + "/" + from + "/" + to + ".json";
         URL url;
         try{
             url = new URL(url_str);
@@ -47,12 +47,20 @@ public class Model {
             JsonParser jp = new JsonParser();
             JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
             JsonObject jsonobj = root.getAsJsonObject();
-
-            return Double.parseDouble(jsonobj.get("result").toString());
+            System.out.println(jsonobj.toString());
+            
+            String res = stringSplit(jsonobj.toString());
+            System.out.println(res);
+            return Double.parseDouble(res);
         }catch(JsonIOException | JsonSyntaxException | 
                 IOException | NumberFormatException e){
             System.out.println(e);
         }
         return 0.;
+    }
+
+    private String stringSplit(String jsonobj) {
+        String[] div = jsonobj.split(",");
+        return div[1].substring(div[1].indexOf(":") + 1, div[1].length()-2);
     }
 }
