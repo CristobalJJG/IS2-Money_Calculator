@@ -2,8 +2,7 @@ package money_calculator;
 
 import Controlador.Controller;
 import Interfaz.View;
-import Modelo.Currencies;
-import Modelo.Model;
+import Modelo.*;
 
 public class Try_Class {
     public static void main(String[] args){

@@ -50,7 +50,6 @@ public class Model {
             System.out.println(jsonobj.toString());
             
             String res = stringSplit(jsonobj.toString());
-            System.out.println(res);
             return Double.parseDouble(res);
         }catch(JsonIOException | JsonSyntaxException | 
                 IOException | NumberFormatException e){

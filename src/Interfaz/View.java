@@ -2,7 +2,6 @@ package Interfaz;
 
 import Modelo.Currencies;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -10,8 +9,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-  import javax.swing.JLabel;
-import javax.swing.UIManager;
+import javax.swing.JLabel;
 import javax.swing.UnsupportedLookAndFeelException;
 
 public class View extends javax.swing.JFrame{
@@ -25,7 +23,6 @@ public class View extends javax.swing.JFrame{
     public View(){
         initComponents();
         addListeners();
-        editComponents();
         setVisible(true);
     }
     
@@ -68,49 +65,44 @@ public class View extends javax.swing.JFrame{
     
     private void addListeners(){
         txtAmount.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyReleased(KeyEvent evt) {
-                updateNumber(evt);
+                updateNumber();
             }
         });
         
         comboFrom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                updateFromTo(ae);
+                updateFromTo();
             }
         });
         
         comboTo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                updateFromTo(ae);
+                updateFromTo();
             }
         });
     }
     
-    private void editComponents() {
-        try{
-            UIManager.setLookAndFeel("windows");
-        } catch(ClassNotFoundException | IllegalAccessException |
-                InstantiationException | UnsupportedLookAndFeelException e) {
-            System.out.println(e);
-        }
-    }
-    
-    private void updateNumber(KeyEvent evt) {
+    private void updateNumber() {
         if((getAmount() + "").matches("[0-9]+\\.[0-9]*")){
+            
             double n = Controlador.Controller.update(getAmount(), getFrom(), getTo());
             setExchange(n);
         }
     }
     
-    private void updateFromTo(ActionEvent ae) {
+    private void updateFromTo() {
         double n = Controlador.Controller.update(getAmount(), getFrom(), getTo());
         setExchange(n);
     }
     
     public double getAmount() {
-        return Double.parseDouble(txtAmount.getText());
+        String amount = txtAmount.getText();
+        if(amount.isBlank()) return 0.;
+        return Double.parseDouble(amount);
     }
     
     public String getFrom() {
@@ -123,7 +115,7 @@ public class View extends javax.swing.JFrame{
     
     private void fillComboBoxes() {
         Currencies c = new Currencies();
-        String[] divisas = (String[])c.getCurrencies();
+        String[] divisas = c.getCurrencies();
         for (String divisa : divisas) {
             comboTo.addItem(divisa);
             comboFrom.addItem(divisa);
